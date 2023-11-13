@@ -1,5 +1,5 @@
 
-export type FarmerTypes ={
+export type UserTypes ={
   name?: string
   email : string
   password : string,

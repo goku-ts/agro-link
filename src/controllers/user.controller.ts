@@ -5,8 +5,8 @@ import JWT from "jsonwebtoken"
 require("dotenv").config()
 
 
-import { Farmer } from "../model/farmerModel"
-import { FarmerTypes } from "../types/farmerTypes"
+import { User } from "../model/user.model"
+import { UserTypes } from "../types/user.types"
 import { validateRegister, validateLogin } from "../services/validationService"
 import { generateToken } from "../services/token.services"
 import { comparePassword, hashPassword } from "../services/password.services"
@@ -18,23 +18,23 @@ export const Register = async (req: Request, res: Response) => {
             message: error.details[0].message
         })
 
-        const newFarmer: FarmerTypes = req.body
+        const newUser: UserTypes = req.body
 
-        const farmerAvailable = await Farmer.findOne({ email: newFarmer.email })
+        const user = await User.findOne({ email: newUser.email })
 
-        if (farmerAvailable) return res.json({
-            message: "Farmer already has an account, try logging in"
+        if (user) return res.json({
+            message: "User already has an account, try logging in"
         })
 
         
-        newFarmer.password = await hashPassword(newFarmer.password)
+        newUser.password = await hashPassword(newUser.password)
 
-        const farmer = new Farmer(newFarmer)
-        await farmer.save()
+        const addUser= new User(newUser)
+        await addUser.save()
 
         res.json({
             status: "SUCCESS",
-            user: _.pick(farmer, ["name"])
+            user: _.pick(addUser, ["name"])
         })
     } catch (error) {
 
@@ -52,18 +52,18 @@ export const Login = async (req: Request, res: Response) => {
             message: error.details[0].message
         })
 
-        const farmerLogin: FarmerTypes = req.body
-        const farmer = await Farmer.findOne({ email: farmerLogin.email})
-        if (!farmer) return res.json({
+        const userLogin: UserTypes = req.body
+        const user = await User.findOne({ email: userLogin.email})
+        if (!User) return res.json({
             message: "incorrect username or password"
         })
 
-        const validpassword = await comparePassword(farmerLogin.password , farmer.password)
+        const validpassword = await comparePassword(userLogin.password , user.password)
         if (!validpassword) return res.json({
             message: "incorrect username or password"
         })
 
-        const token = generateToken(farmer._id)
+        const token = generateToken(user._id)
        
 
         res.header("token", token).json({

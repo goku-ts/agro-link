@@ -3,8 +3,8 @@ require('dotenv').config({path:"../.env"});
 
 import { dbConnect } from "./db/connection.db"
 import cors from "cors"
-import { userRouter} from "./route/farmerRoutes"
-import { mainRouter } from "./route/mainRoutes"
+import { userRouter} from "./route/user.routes"
+import { mainRouter } from "./route/main.routes"
 import { Auth } from "./middlewares/auth.middleware"
 
 

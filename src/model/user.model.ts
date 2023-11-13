@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 
-const farmerSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -29,4 +29,4 @@ const farmerSchema = new mongoose.Schema({
     })
 
 
-export const Farmer = mongoose.model("User", farmerSchema)
+export const User = mongoose.model("User", userSchema)

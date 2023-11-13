@@ -1,6 +1,6 @@
 import express from "express"
 
-import { Register,Login } from "../controllers/farmerControllers"
+import { Register,Login } from "../controllers/user.controller"
 
 
 
