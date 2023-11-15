@@ -7,7 +7,7 @@ export interface AuthRequest extends Request {
     user?: string | JwtPayload
 }
 
-const KEY = process.env.APP_KEY
+const KEY = process.env.APP_KEY as string
 
 export const Auth = (req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.header("token")

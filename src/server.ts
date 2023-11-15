@@ -13,10 +13,10 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use("/user", userRouter)
-app.use("/main", mainRouter)
+app.use("/main",Auth, mainRouter)
 
 
-const PORT = process.env.PORT 
+const PORT = process.env.PORT || 3000
 
 
 app.listen(PORT, () => dbConnect())
