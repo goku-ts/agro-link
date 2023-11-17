@@ -1,27 +1,20 @@
-import  { Response, Request } from "express"
-import { validateService } from "../../services/validationService"
+import { Response, Request } from "express"
+
+import { validateProduct } from "../../services/validationService"
 import { Service } from "../../model/service.models"
 import { logger } from "../../services/logger.service"
-import { UserRegisterTypes } from "../../types/types"
 import { ImageUpload } from "../image.upload"
 import { AuthRequest } from "../../middlewares/auth.middleware"
 
-export const addService =  async (req: AuthRequest, res: Response) => {
-    try {
-        const { error } = validateService(req.body)
-        if (error) return res.json({
-            message: error.details[0].message
-        })
+import { addToDB, getFromDB, getAllFromDB, updateToDB, deleteFromDB, getByUserFromDB } from "../../db/operations/db.operations"
 
-        const addService = new Service({
-            ...req.body,
-            seller: req.user
-        })
-        const service = await addService.save()
+export const addService = async (req: AuthRequest, res: Response) => {
+    try {
+        const result = await addToDB(req, Service, validateProduct)
 
         res.json({
             message: "SUCCESS",
-            service: service
+            service: result
         })
 
     } catch (error) {
@@ -29,16 +22,12 @@ export const addService =  async (req: AuthRequest, res: Response) => {
     }
 }
 
-export const getService =  async(req: Request, res: Response) => {
+export const getService = async (req: Request, res: Response) => {
     try {
-        const service_id = req.params.id
-        const service = await Service.findById({ _id: service_id }).populate({ path: "seller", select: "name" })
-        if (!service) return res.json({
-            message: "no service with given id found"
-        })
+        const result = await getFromDB(req, Service, "seller", "name", "service")
         res.json({
             message: "SUCCESS",
-            service: service
+            service: result
         })
 
     } catch (error) {
@@ -46,13 +35,13 @@ export const getService =  async(req: Request, res: Response) => {
     }
 }
 
-export const getAllServices =  async (req: Request, res: Response) => {
+export const getAllServices = async (req: Request, res: Response) => {
     try {
 
-        const service = await Service.find().populate({ path: "seller", select: "name" })
+        const result = await getAllFromDB(req, Service, "seller", "name")
         res.json({
             message: "SUCCESS",
-            service: service
+            service: result
         })
 
     } catch (error) {
@@ -60,15 +49,9 @@ export const getAllServices =  async (req: Request, res: Response) => {
     }
 }
 
-export const updateService =  async (req: Request, res: Response) => {
+export const updateService = async (req: Request, res: Response) => {
     try {
-        const service_update = req.body
-        const service_id = req.params.id
-        const service = await Service.findByIdAndUpdate({ _id: service_id }, service_update)
-        if (!service) return res.json({
-            message: "no service with given id found"
-        })
-        // const update = await service.save()
+        await updateToDB(req, Service, "service")
         res.json({
             message: "SUCCESS"
         })
@@ -80,14 +63,10 @@ export const updateService =  async (req: Request, res: Response) => {
 
 export const deleteService = async (req: Request, res: Response) => {
     try {
-        const service_id = req.params.id
-        const service = await Service.findByIdAndDelete({ _id: service_id })
-        if (!service) return res.json({
-            message: "no service with given id found"
-        })
+        const result = await deleteFromDB(req, Service, "service")
         res.json({
             message: "SUCCESS",
-            deleted: service
+            deleted: result
         })
 
     } catch (error) {
@@ -96,21 +75,21 @@ export const deleteService = async (req: Request, res: Response) => {
 }
 
 export const uploadServiceImage = async (req: Request, res: Response) => {
-    const userId = req.params.id
-    const body: UserRegisterTypes = req.body
+    const id = req.params.id
+    const body = req.body
     try {
-        const service = await Service.findById({ _id: userId })
+        const service = await Service.findById({ _id: id })
         if (!service) res.json({
             message: "service not found, could not upload image"
         })
 
         const result = await ImageUpload(req.file)
-         if (!result) return res.json({
+        if (!result) return res.json({
             message: "image updload fail"
         })
 
         body.image = result
-        const update = await Service.findByIdAndUpdate({ _id: userId },{...body})
+        const update = await Service.findByIdAndUpdate({ _id: id }, { ...body })
         res.json({
             message: "SUCCESS"
         })
@@ -123,11 +102,10 @@ export const uploadServiceImage = async (req: Request, res: Response) => {
 
 export const getUserAllService = async (req: AuthRequest, res: Response) => {
     try {
-        const userId = req.user
-        const produce = await Service.find({seller : userId})
+        const result = await getByUserFromDB(req, Service)
         res.json({
             message: "SUCCESS",
-            produce: produce
+            produce: result
         })
 
     } catch (error) {

@@ -1,4 +1,6 @@
 
+import { Model,Document } from "mongoose"
+
 export type UserRegisterTypes = {
 
   name: string,
@@ -27,7 +29,7 @@ export type UserLoginTypes = {
 
 }
 
-export type ProduceTypes = {
+export interface ProduceTypes extends Document {
 
   name: string
   description: string,

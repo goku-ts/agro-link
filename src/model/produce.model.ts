@@ -50,4 +50,4 @@ export const produceSchema = new mongoose.Schema<ProduceTypes>({
 })
 
 
-   export const Produce = mongoose.model("Produce", produceSchema)
+   export const Produce = mongoose.model<ProduceTypes>("Produce", produceSchema)

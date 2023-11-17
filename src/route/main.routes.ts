@@ -10,7 +10,7 @@ export const mainRouter = express.Router()
 {/* service ROUTES*/}
 mainRouter.post("/service/add", addService )
 mainRouter.get("/service/", getAllServices )
-mainRouter.get("/produce/user", getUserAllService )
+mainRouter.get("/service/user", getUserAllService )
 mainRouter.get("/service/:id", getService )
 mainRouter.put("/service/:id", updateService)
 mainRouter.delete("/service/:id", deleteService )
